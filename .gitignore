@@ -1,0 +1,18 @@
+﻿# .NET build outputs
+bin/
+obj/
+
+# Visual Studio files
+.vs/
+*.user
+*.suo
+*.sin
+
+# Development configs
+appsettings.Development.json
+
+# Dependency folders
+node_modules/
+
+# Publish output
+publish/

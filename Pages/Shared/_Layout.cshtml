@@ -1,0 +1,211 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Lloyd's Portfolio</title>
+    <!-- Load Bootstrap CSS only once -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Fixed Navbar -->
+    <header>
+        <nav class="navbar navbar-expand-md navbar-light bg-white fixed-top">
+            <div class="container">
+                <a class="navbar-brand fw-bold" href="#home">Lloyd Aringo</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#home">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#about">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#portfolio">Portfolio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#contact">Contact</a>
+                        </li>
+                        <!-- Dark Mode Toggle -->
+                        <li class="nav-item ms-2 d-flex align-items-center">
+                            <button id="themeToggle" class="btn btn-sm border-0 px-3">
+                                <i class="fas fa-moon"></i>
+                                <span class="ms-1 d-none d-md-inline">Dark Mode</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <footer class="border-top footer text-muted py-3">
+        <div class="container text-center">
+            &copy; @DateTime.Now.Year - Lloyd Cipriano Aringo
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+                    const phrases = [
+            "Aspiring Software Engineer",  
+            "Information Technology Graduate",           
+            "Passionate Programmer",       
+            "Tech Enthusiast & Coder",
+            "Continuous Learner of Cloud Technologies",
+            "Open-Source Contributor in Training"
+            ];
+            const element = document.getElementById("typewriter-text");
+            let i = 0;
+            let j = 0;
+            let isDeleting = false;
+            let typingSpeed = 100;
+
+            function typeWriter() {
+                const currentText = phrases[j].substring(0, i);
+                element.innerHTML = currentText;
+
+                if (!isDeleting && i === phrases[j].length) {
+                    isDeleting = true;
+                    setTimeout(typeWriter, 1500);
+                } else if (isDeleting && i === 0) {
+                    isDeleting = false;
+                    j = (j + 1) % phrases.length;
+                    setTimeout(typeWriter, 500);
+                } else {
+                    isDeleting ? i-- : i++;
+                    const speedVariation = Math.random() * 50 + 50;
+                    setTimeout(typeWriter, isDeleting ? typingSpeed/2 : typingSpeed + speedVariation);
+                }
+            }
+
+            setTimeout(typeWriter, 500);
+
+
+
+            // ===== Theme Toggle =====
+            const themeToggle = document.getElementById('themeToggle');
+            const htmlElement = document.documentElement;
+            const bodyElement = document.body;
+
+            // Apply theme changes
+            function setTheme(isDark) {
+                // Set both standard and Bootstrap dark mode attributes
+                htmlElement.setAttribute('data-bs-theme', isDark ? 'dark' : 'light');
+                htmlElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+
+                // Update navbar class based on theme
+                const navbar = document.querySelector('.navbar');
+                if (isDark) {
+                    navbar.classList.remove('navbar-light', 'bg-white');
+                    navbar.classList.add('navbar-dark', 'bg-dark');
+                } else {
+                    navbar.classList.remove('navbar-dark', 'bg-dark');
+                    navbar.classList.add('navbar-light', 'bg-white');
+                }
+
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+
+                // Update toggle button
+                if (themeToggle) {
+                    const icon = themeToggle.querySelector('i');
+                    const text = themeToggle.querySelector('span');
+                    icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+                    text.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+                }
+            }
+
+            // Initialize theme
+            function initializeTheme() {
+                const savedTheme = localStorage.getItem('theme');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const isDark = savedTheme ? savedTheme === 'dark' : prefersDark;
+                setTheme(isDark);
+            }
+
+            // Initialize theme on load
+            initializeTheme();
+
+            // Toggle handler
+            if (themeToggle) {
+                themeToggle.addEventListener('click', () => {
+                    const isDark = htmlElement.getAttribute('data-bs-theme') !== 'dark';
+                    setTheme(isDark);
+                });
+            }
+
+            // Listen for system theme changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                if (!localStorage.getItem('theme')) {
+                    setTheme(e.matches);
+                }
+            });
+
+            // ===== Smooth Scrolling & Active Section =====
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            // Smooth scrolling with offset
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        window.scrollTo({
+                            top: target.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                        history.replaceState(null, null, this.getAttribute('href'));
+                    }
+                });
+            });
+
+            // Highlight active section
+            function setActiveLink() {
+                const scrollPos = window.scrollY + 100;
+                let currentSection = '';
+
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.offsetHeight;
+                    const sectionId = section.getAttribute('id');
+
+                    if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
+                        currentSection = sectionId;
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${currentSection}`) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+
+            // Set up scroll listener
+            window.addEventListener('scroll', setActiveLink);
+            setActiveLink(); // Initialize on load
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
